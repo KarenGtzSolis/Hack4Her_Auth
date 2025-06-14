@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TUALI OTP Auth',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.red,
+        fontFamily: 'Lexend Deca',
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginScreen(),
@@ -35,11 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _phoneController.text = '+52 ';
+    _phoneController.text = '';
   }
 
   void _sendOTP() async {
-    if (_phoneController.text.length < 14) {
+    if (_phoneController.text.length < 10) {
       _showSnackBar('Por favor ingresa un número válido', Colors.red);
       return;
     }
@@ -49,7 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      print('🚀 Enviando OTP a: ${_phoneController.text}');
+      String fullPhone = '+52${_phoneController.text}';
+      print('🚀 Enviando OTP a: $fullPhone');
       
       // Llamada real a la API - CAMBIA LA URL SEGÚN TU DISPOSITIVO:
       // Para emulador Android: http://10.0.2.2:5274/api/auth/send-otp
@@ -60,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'phoneNumber': _phoneController.text,
+          'phoneNumber': fullPhone,
         }),
       );
 
@@ -75,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => OTPVerificationScreen(
-                phoneNumber: _phoneController.text,
+                phoneNumber: fullPhone,
               ),
             ),
           );
@@ -108,135 +110,210 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 60),
-              // Header
-              Text(
-                'Bienvenido a',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Text(
-                'TUALI',
-                style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple[700],
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Ingresa tu número de teléfono para continuar',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-              ),
-              SizedBox(height: 60),
-              
-              // Phone Input
-              Text(
-                'Número de teléfono',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[800],
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  maxLength: 17,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[+0-9\s]')),
-                  ],
-                  decoration: InputDecoration(
-                    hintText: '+52 999 123 4567',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(16),
-                    counterText: '',
-                    prefixIcon: Icon(Icons.phone, color: Colors.purple[700]),
-                  ),
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              
-              SizedBox(height: 40),
-              
-              // Send OTP Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _sendOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple[700],
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFFC31F39),
+        ),
+        child: CustomPaint(
+          painter: GridPainter(),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Top section with logo
+                Expanded(
+                  flex: 4,
+                  child: Center(
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      child: Stack(
+                        children: [
+                          // Logo text without circle
+                          Center(
+                            child: Text(
+                              'túali',
+                              style: TextStyle(
+                                fontSize: 42,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontFamily: 'Lexend Deca',
+                              ),
+                            ),
                           ),
-                        )
-                      : Text(
-                          'Enviar código',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ),
-              
-              Spacer(),
-              
-              // Footer
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Al continuar, aceptas nuestros',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                        ],
                       ),
                     ),
-                    Text(
-                      'Términos y Condiciones',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.purple[700],
-                        decoration: TextDecoration.underline,
+                  ),
+                ),
+                
+                // Bottom section with card
+                Expanded(
+                  flex: 6,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
                       ),
                     ),
-                  ],
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 20),
+                          
+                          Text(
+                            'Inicia Sesión',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          SizedBox(height: 32),
+                          
+                          Text(
+                            'Ingresa tu número telefónico:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                          ),
+                          
+                          SizedBox(height: 16),
+                          
+                          // Phone input
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFC31F39),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      bottomLeft: Radius.circular(8),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 20,
+                                        height: 14,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(2),
+                                        ),
+                                        child: Image.network(
+                                          'https://flagcdn.com/w20/mx.png',
+                                          width: 20,
+                                          height: 14,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Icon(Icons.flag, color: Colors.white, size: 20);
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        '+52',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'Lexend Deca',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _phoneController,
+                                    decoration: InputDecoration(
+                                      hintText: '55 1234 5678',
+                                      hintStyle: TextStyle(
+                                        fontFamily: 'Lexend Deca',
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    ),
+                                    keyboardType: TextInputType.phone,
+                                    style: TextStyle(
+                                      fontFamily: 'Lexend Deca',
+                                      fontSize: 16,
+                                    ),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(10),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          SizedBox(height: 12),
+                          
+                          Text(
+                            'Te enviaremos un código de acceso por SMS o WhatsApp.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          SizedBox(height: 32),
+                          
+                          // Send button
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _sendOTP,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFC31F39),
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    'Enviar Código',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      fontFamily: 'Lexend Deca',
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 20),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -297,11 +374,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     try {
       print('🔍 Verificando OTP: $otp para ${widget.phoneNumber}');
       
-      // Llamada real a la API de verificación - CAMBIA LA URL SEGÚN TU DISPOSITIVO:
-      // Para emulador Android: http://10.0.2.2:5274/api/auth/verify-otp
-      // Para iOS/Web: http://localhost:5274/api/auth/verify-otp
+      // Llamada real a la API de verificación
       final response = await http.post(
-        Uri.parse('http://localhost:5274/api/auth/verify-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -321,7 +396,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(token: data['token']),
+              builder: (context) => TualiHomeScreen(token: data['token']),
             ),
           );
         } else {
@@ -361,146 +436,191 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.grey[800]),
-          onPressed: () => Navigator.pop(context),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFFC31F39),
         ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20),
-              
-              // Header
-              Text(
-                'Verificación',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Ingresa el código de 6 dígitos enviado a',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Text(
-                widget.phoneNumber,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.purple[700],
-                ),
-              ),
-              
-              SizedBox(height: 60),
-              
-              // OTP Input Fields
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(6, (index) {
-                  return Container(
-                    width: 45,
-                    height: 55,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _focusNodes[index].hasFocus 
-                            ? Colors.purple[700]! 
-                            : Colors.grey[300]!,
-                        width: _focusNodes[index].hasFocus ? 2 : 1,
+        child: CustomPaint(
+          painter: GridPainter(),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Top section with logo and back button
+                Expanded(
+                  flex: 4,
+                  child: Stack(
+                    children: [
+                      // Back button
+                      Positioned(
+                        top: 20,
+                        left: 20,
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                          onPressed: () => Navigator.pop(context),
+                        ),
                       ),
-                    ),
-                    child: TextFormField(
-                      controller: _controllers[index],
-                      focusNode: _focusNodes[index],
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        counterText: '',
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      onChanged: (value) => _onDigitChanged(index, value),
-                    ),
-                  );
-                }),
-              ),
-              
-              SizedBox(height: 40),
-              
-              // Verify Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple[700],
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Text(
-                          'Verificar',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                      // Logo
+                      Center(
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          child: Center(
+                            child: Text(
+                              'túali',
+                              style: TextStyle(
+                                fontSize: 42,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontFamily: 'Lexend Deca',
+                              ),
+                            ),
                           ),
                         ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              
-              SizedBox(height: 30),
-              
-              // Resend Code
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    _showSnackBar('Función de reenvío no implementada aún', Colors.orange);
-                  },
-                  child: Text(
-                    '¿No recibiste el código? Reenviar',
-                    style: TextStyle(
-                      color: Colors.purple[700],
-                      fontSize: 14,
+                
+                // Bottom section with card
+                Expanded(
+                  flex: 6,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 20),
+                          
+                          Text(
+                            'Ingresa el código de\nverificación',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          SizedBox(height: 32),
+                          
+                          // Code input fields
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(6, (index) {
+                              return Container(
+                                width: 35,
+                                height: 45,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: _focusNodes[index].hasFocus 
+                                          ? Color(0xFFC31F39)
+                                          : Colors.grey.shade400,
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                child: TextField(
+                                  controller: _controllers[index],
+                                  focusNode: _focusNodes[index],
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 1,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    counterText: '',
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Lexend Deca',
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  onChanged: (value) => _onDigitChanged(index, value),
+                                ),
+                              );
+                            }),
+                          ),
+                          
+                          SizedBox(height: 24),
+                          
+                          Text(
+                            '¿No recibiste el código?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          SizedBox(height: 8),
+                          
+                          TextButton(
+                            onPressed: () {
+                              _showSnackBar('Función de reenvío no implementada aún', Colors.orange);
+                            },
+                            child: Text(
+                              'Reenviar el código.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFFC31F39),
+                                decoration: TextDecoration.underline,
+                                fontFamily: 'Lexend Deca',
+                              ),
+                            ),
+                          ),
+                          
+                          SizedBox(height: 32),
+                          
+                          // Verify button
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _verifyOTP,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFC31F39),
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    'Verificar',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      fontFamily: 'Lexend Deca',
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              
-              Spacer(),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -508,143 +628,370 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+// Nueva pantalla Home con el diseño bonito de TUALI
+class TualiHomeScreen extends StatelessWidget {
   final String token;
 
-  const HomeScreen({Key? key, required this.token}) : super(key: key);
+  const TualiHomeScreen({Key? key, required this.token}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 40),
-              
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Color(0xFFF5F5F5),
+      body: Column(
+        children: [
+          // Header with wave shape
+          ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 280,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFFC31F39),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
                     children: [
+                      // Logo and title
                       Text(
-                        '¡Bienvenido!',
+                        'túali',
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                          color: Colors.white,
+                          fontFamily: 'Lexend Deca',
                         ),
                       ),
+                      
+                      SizedBox(height: 8),
+                      
                       Text(
-                        'Autenticación exitosa',
+                        "let's start",
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey[600],
+                          color: Colors.white70,
+                          fontFamily: 'Lexend Deca',
                         ),
+                      ),
+                      
+                      SizedBox(height: 32),
+                      
+                      // Category circles
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildCategoryCircle('Refrescos', Icons.local_drink, Colors.white),
+                          _buildCategoryCircle('Jugos', Icons.local_drink, Colors.white),
+                          _buildCategoryCircle('Agua', Icons.water_drop, Colors.lightBlue.shade100),
+                        ],
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+          ),
+          
+          // Content
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Coca Cola promo
                   Container(
-                    width: 50,
-                    height: 50,
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.purple[100],
-                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.purple[700],
-                      size: 28,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Comparte\nuna Coca',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Realiza tu pedido\nahora mismo',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.local_drink,
+                            color: Color(0xFFC31F39),
+                            size: 40,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  SizedBox(height: 24),
+                  
+                  Text(
+                    'Productos',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lexend Deca',
+                    ),
+                  ),
+                  
+                  SizedBox(height: 16),
+                  
+                  // Products grid
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.8,
+                      children: [
+                        _buildProductCard('Powerade', '\$ 25.0', Colors.blue),
+                        _buildProductCard('Del Valle', '\$ 15.0', Colors.orange),
+                        _buildProductCard('Coca Cola', '\$ 20.0', Color(0xFFC31F39)),
+                        _buildProductCard('Sprite', '\$ 18.0', Colors.green),
+                      ],
                     ),
                   ),
                 ],
               ),
-              
-              SizedBox(height: 40),
-              
-              // Success Card
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.purple[700]!, Colors.purple[500]!],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.white,
-                      size: 64,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Login Exitoso',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Tu autenticación con OTP ha sido completada correctamente',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              Spacer(),
-              
-              // Logout Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                      (route) => false,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[200],
-                    foregroundColor: Colors.grey[800],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'Cerrar Sesión',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: 20),
-            ],
+            ),
           ),
+        ],
+      ),
+      
+      // Bottom navigation
+      bottomNavigationBar: Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Color(0xFFC31F39),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildNavItem(Icons.home, 'Inicio', true),
+            _buildNavItem(Icons.grid_view, 'Productos', false),
+            _buildNavItem(Icons.shopping_bag, 'Pedidos', false),
+            _buildNavItem(Icons.menu, 'Menú', false),
+          ],
         ),
       ),
     );
   }
+  
+  Widget _buildCategoryCircle(String title, IconData icon, Color bgColor) {
+    return Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: bgColor,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: bgColor == Colors.white ? Color(0xFFC31F39) : Colors.blue,
+            size: 28,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Lexend Deca',
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildProductCard(String name, String price, Color color) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Container(
+              margin: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.local_drink,
+                color: color,
+                size: 40,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lexend Deca',
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    price,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                      fontFamily: 'Lexend Deca',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildNavItem(IconData icon, String label, bool isActive) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isActive ? Colors.white : Colors.white70,
+            size: 24,
+          ),
+          SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isActive ? Colors.white : Colors.white70,
+              fontFamily: 'Lexend Deca',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Custom painter for grid background
+class GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.1)
+      ..strokeWidth = 1;
+
+    const spacing = 40.0;
+    
+    // Vertical lines
+    for (double x = 0; x < size.width; x += spacing) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x, size.height),
+        paint,
+      );
+    }
+    
+    // Horizontal lines
+    for (double y = 0; y < size.height; y += spacing) {
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(size.width, y),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+// Custom clipper for wave shape
+class WaveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height - 50);
+    
+    var firstControlPoint = Offset(size.width / 4, size.height);
+    var firstEndPoint = Offset(size.width / 2, size.height - 30);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
+    
+    var secondControlPoint = Offset(size.width * 3 / 4, size.height - 60);
+    var secondEndPoint = Offset(size.width, size.height - 20);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
+    
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
