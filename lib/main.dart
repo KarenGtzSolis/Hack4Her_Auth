@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('🚀 Enviando OTP a: $fullPhone');
       
       final response = await http.post(
-        Uri.parse('http://localhost:5274/api/auth/send-otp'),
+        parse('http://10.0.2.2:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -438,7 +438,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       print('🔍 Verificando OTP: $otp para ${widget.phoneNumber}');
       
       final response = await http.post(
-        Uri.parse('http://localhost:5274/api/auth/verify-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/verify-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
