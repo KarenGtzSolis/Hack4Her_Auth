@@ -12,6 +12,7 @@ import 'services/product_service.dart';
 
 void main() {
   runApp(const MyApp());
+  // Copied from _TualiHomeScreenState for navigation bar items
 }
 
 class MyApp extends StatelessWidget {
@@ -761,6 +762,12 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
   int _cartItemCount = 0;
   List<BusinessUnit> _businessUnits = [];
   String _selectedBusinessUnit = 'Todos';
+
+  Color _getCartItemBackgroundColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Color(0xFFE3F2FD);
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Color(0xFFFFF3E0);
+    return Color(0xFFF3E5F5);
+  }
   
 
   @override
@@ -1011,6 +1018,45 @@ Widget _buildCategoriesSection() {
   );
 }
 
+
+  // Add this method to build product cards in the cart screen
+
+  // Add missing _buildNavItem method
+
+  // Add missing _buildNavItem method
+
+  // Add missing _buildNavItem method
+
+  // Add missing _buildNavItem method
+  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isActive ? Colors.white : Colors.white70,
+              size: 24,
+            ),
+            SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: isActive ? Colors.white : Colors.white70,
+                fontFamily: 'Lexend Deca',
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1074,6 +1120,10 @@ Widget _buildCategoriesSection() {
               ),
             ),
           ),
+
+          
+
+
                     
                 
           // Contenido con productos
@@ -1326,38 +1376,16 @@ Widget _buildCategoriesSection() {
     if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Colors.orange;
     return Color(0xFFC31F39);
   }
+
+  // Added missing method to fix compile error
+  Color _getCartItemColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Colors.blue;
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Colors.orange;
+    return Color(0xFFC31F39);
+  }
   
   String _getProductImagePath(Product product) {
     return 'assets/images/products/${product.imageUrl}';
-  }
-  
-  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? Colors.white : Colors.white70,
-              size: 24,
-            ),
-            SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: isActive ? Colors.white : Colors.white70,
-                fontFamily: 'Lexend Deca',
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 
@@ -1375,11 +1403,374 @@ class _CartScreenState extends State<CartScreen> {
   bool _isLoading = true;
   bool _isUpdating = false;
   List<Product> _allProducts = []; 
+  List<BusinessUnit> _businessUnits = [];
+  String _selectedBusinessUnit = 'Todos';
+  List<String> _categories = [];
+  String _selectedCategory = 'Todos';
+  List<Product> _filteredProducts = [];
+
+
+  // Add this method to fix the missing _getProductBackgroundColor error
+  Color _getProductBackgroundColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Color(0xFFE3F2FD);
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Color(0xFFFFF3E0);
+    return Color(0xFFF3E5F5);
+  }
+
+  // Add this method to fix the missing _getProductColor error
+  Color _getProductColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Colors.blue;
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Colors.orange;
+    return Color(0xFFC31F39);
+  }
+
+
+  // Add this method to fix the missing _buildProductCard error
+  Widget _buildProductCard(Product product) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Product image in a circle
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: _getProductBackgroundColor(product.name),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Image.asset(
+                  'assets/images/products/${product.imageUrl}',
+                  width: 45,
+                  height: 50,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.local_drink,
+                      color: _getProductColor(product.name),
+                      size: 32,
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 32,
+                  child: Text(
+                    product.name,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lexend Deca',
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SizedBox(
+                  height: 20,
+                  child: Text(
+                    '\$ ${product.price.toStringAsFixed(0)}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lexend Deca',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Optionally implement add to cart for cart screen
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFC31F39),
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.zero,
+                      elevation: 2,
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Add missing _buildCategoriesSection method
+  Widget _buildCategoriesSection() {
+    return Container(
+      height: 60,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildCategoryItem(
+            icon: Icons.local_drink,
+            label: 'Refrescos',
+            isSelected: _selectedCategory == 'Refrescos',
+            onTap: () => _filterByCategory('Refrescos'),
+          ),
+          _buildCategoryItem(
+            icon: Icons.local_drink_outlined,
+            label: 'Jugos',
+            isSelected: _selectedCategory == 'Jugos',
+            onTap: () => _filterByCategory('Jugos'),
+          ),
+          _buildCategoryItem(
+            icon: Icons.water_drop,
+            label: 'Agua',
+            isSelected: _selectedCategory == 'Agua',
+            onTap: () => _filterByCategory('Agua'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryItem({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xFFC31F39) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : Color(0xFFC31F39),
+              size: 20,
+            ),
+            SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Color(0xFFC31F39),
+                fontFamily: 'Lexend Deca',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     _loadCart();
+    _loadBusinessUnitsAndCategories();
+  }
+
+  Future<void> _loadBusinessUnitsAndCategories() async {
+    try {
+      final businessUnits = await ProductService.getBusinessUnits();
+      final categories = await ProductService.getCategories();
+      setState(() {
+        _businessUnits = businessUnits;
+        _categories = ['Todos', ...categories];
+      });
+    } catch (e) {
+      print('❌ Error cargando unidades/categorías: $e');
+    }
+  }
+
+  void _filterByBusinessUnit(String businessUnit) {
+    setState(() {
+      _selectedBusinessUnit = businessUnit;
+      _selectedCategory = 'Todos';
+      if (businessUnit == 'Todos') {
+        _filteredProducts = _allProducts;
+      } else {
+        _filteredProducts = _allProducts.where((product) => product.businessUnit == businessUnit).toList();
+      }
+    });
+  }
+
+  void _filterByCategory(String category) {
+    setState(() {
+      _selectedCategory = category;
+      if (category == 'Todos') {
+        _filteredProducts = _allProducts;
+      } else {
+        _filteredProducts = _allProducts.where((product) => product.category == category).toList();
+      }
+    });
+  }
+
+  Widget _buildBusinessUnitsSection() {
+    return Container(
+      height: 120,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Marcas Arca Continental',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontFamily: 'Lexend Deca',
+            ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: _businessUnits.isEmpty
+                ? Center(child: Text('Cargando marcas...'))
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _businessUnits.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return _buildBusinessUnitCard(
+                          name: 'Todos',
+                          displayName: 'Ver Todo',
+                          color: '#757575',
+                          isSelected: _selectedBusinessUnit == 'Todos',
+                          onTap: () => _filterByBusinessUnit('Todos'),
+                        );
+                      }
+                      final businessUnit = _businessUnits[index - 1];
+                      return _buildBusinessUnitCard(
+                        name: businessUnit.name,
+                        displayName: businessUnit.displayName,
+                        color: businessUnit.color,
+                        isSelected: _selectedBusinessUnit == businessUnit.name,
+                        onTap: () => _filterByBusinessUnit(businessUnit.name),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBusinessUnitCard({
+    required String name,
+    required String displayName,
+    required String color,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    Color cardColor = Color(int.parse(color.replaceFirst('#', '0xFF')));
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 100,
+        margin: EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? cardColor : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: cardColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: name == 'Todos'
+                    ? Icon(Icons.apps, color: cardColor, size: 28)
+                    : Icon(_getBusinessUnitIcon(name), color: cardColor, size: 28),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              displayName,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? cardColor : Colors.black87,
+                fontFamily: 'Lexend Deca',
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getBusinessUnitIcon(String businessUnit) {
+    switch (businessUnit.toLowerCase()) {
+      case 'coca-cola':
+        return Icons.local_drink;
+      case 'del valle':
+        return Icons.local_drink_outlined;
+      case 'aguas':
+        return Icons.water_drop;
+      case 'deportivas':
+        return Icons.sports_gymnastics;
+      default:
+        return Icons.store;
+    }
   }
 
   Future<void> _loadCart() async {
@@ -1435,7 +1826,7 @@ class _CartScreenState extends State<CartScreen> {
       backgroundColor: Color(0xFFF5F5F5),
       body: Column(
         children: [
-          // Header rojo igual que home - EXACTO COMO FIGMA
+          // Header rojo con logo y título
           Container(
             height: 140,
             width: double.infinity,
@@ -1449,7 +1840,8 @@ class _CartScreenState extends State<CartScreen> {
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Logo túali
                     SizedBox(
@@ -1472,11 +1864,9 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     
-                    const SizedBox(height: 16),
-                    
-                    // Título "Mi carrito"
+                    // Título "Nuestras Marcas"
                     Text(
-                      'Mi carrito',
+                      'Nuestras Marcas',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -1484,25 +1874,123 @@ class _CartScreenState extends State<CartScreen> {
                         fontFamily: 'Lexend Deca',
                       ),
                     ),
+                    
+                    // Spacer para equilibrar
+                    SizedBox(width: 80),
                   ],
                 ),
               ),
             ),
           ),
           
-          // Contenido del carrito
+          // Contenido
           Expanded(
-            child: _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFFC31F39),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Sección de Unidades de Negocio
+                  _buildBusinessUnitsSection(),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Categorías tradicionales
+                  _buildCategoriesSection(),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Título dinámico
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _selectedBusinessUnit != 'Todos' 
+                        ? 'Productos $_selectedBusinessUnit'
+                        : _selectedCategory != 'Todos'
+                          ? 'Productos $_selectedCategory'
+                          : 'Productos',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Lexend Deca',
+                      ),
                     ),
-                  )
-                : _cart == null || _cart!.items.isEmpty
-                    ? _buildEmptyCart()
-                    : _buildCartContent(),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Grid de productos
+                  Expanded(
+                    child: _isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFFC31F39),
+                            ),
+                          )
+                        : _filteredProducts.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'No hay productos en esta categoría',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                    fontFamily: 'Lexend Deca',
+                                  ),
+                                ),
+                              )
+                            : GridView.builder(
+                              itemCount: _filteredProducts.length,
+                              padding: const EdgeInsets.all(8),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 0.75,
+                              ),
+                              itemBuilder: (context, index) {
+                                final product = _filteredProducts[index];
+                                return _buildProductCard(product);
+                              },
+                            )
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
+      ),
+      
+      // Bottom navigation
+      bottomNavigationBar: Container(
+        height: 90,
+        decoration: const BoxDecoration(
+          color: Color(0xFFC31F39),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNavItem(Icons.home, 'Inicio', true, () {}),
+              _buildNavItem(Icons.apps, 'Productos', false, () {}),
+              _buildNavItem(Icons.shopping_cart, 'Carrito', false, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(
+                      phoneNumber: '+528119606624',
+                    ),
+                  ),
+                );
+              }),
+              _buildNavItem(Icons.shopping_bag, 'Pedidos', false, () {}),
+              _buildNavItem(Icons.menu, 'Menú', false, () {}),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1751,6 +2239,7 @@ class _CartScreenState extends State<CartScreen> {
         description: '',
         price: 0.0,
         category: '',
+        businessUnit: '',
         imageUrl: 'default.png',
         available: false,
       ),
