@@ -1,4 +1,3 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -53,11 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
       String fullPhone = '+52${_phoneController.text}';
       print('🚀 Enviando OTP a: $fullPhone');
       
-      // Llamada real a la API - CAMBIA LA URL SEGÚN TU DISPOSITIVO:
-      // Para emulador Android: http://10.0.2.2:5274/api/auth/send-otp
-      // Para iOS/Web: http://localhost:5274/api/auth/send-otp
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
+        parse('http://10.0.2.2:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -110,210 +106,278 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFFC31F39),
-        ),
-        child: CustomPaint(
-          painter: GridPainter(),
-          child: SafeArea(
-            child: Column(
-              children: [
-                // Top section with logo
-                Expanded(
-                  flex: 4,
-                  child: Center(
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              // Layout base con Column
+              Column(
+                children: [
+                  // Top section with grid only
+                  Expanded(
+                    flex: 5,
                     child: Container(
-                      width: 150,
-                      height: 150,
-                      child: Stack(
-                        children: [
-                          // Logo text without circle
-                          Center(
-                            child: Text(
-                              'túali',
-                              style: TextStyle(
-                                fontSize: 42,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: 'Lexend Deca',
-                              ),
-                            ),
-                          ),
-                        ],
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF5F5F5),
+                      ),
+                      child: CustomPaint(
+                        painter: GridPainter(),
+                        size: Size.infinite,
                       ),
                     ),
                   ),
-                ),
-                
-                // Bottom section with card
-                Expanded(
-                  flex: 6,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+                  
+                  // Bottom white section
+                  Expanded(
+                    flex: 6,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 20),
-                          
-                          Text(
-                            'Inicia Sesión',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontFamily: 'Lexend Deca',
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          
-                          SizedBox(height: 32),
-                          
-                          Text(
-                            'Ingresa tu número telefónico:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                              fontFamily: 'Lexend Deca',
-                            ),
-                          ),
-                          
-                          SizedBox(height: 16),
-                          
-                          // Phone input
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFC31F39),
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(8),
-                                      bottomLeft: Radius.circular(8),
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            // Logo túali en la sección blanca
+                            Container(
+                              width: 120,
+                              height: 60,
+                              child: Image.asset(
+                                'assets/images/tuali_logo.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Text(
+                                    'túali',
+                                    style: TextStyle(
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFC31F39),
+                                      fontFamily: 'Lexend Deca',
                                     ),
+                                  );
+                                },
+                              ),
+                            ),
+                            
+                            Text(
+                              'Inicia Sesión',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontFamily: 'Lexend Deca',
+                              ),
+                            ),
+                            
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Ingresa tu número telefónico:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                    fontFamily: 'Lexend Deca',
+                                  ),
+                                ),
+                                
+                                SizedBox(height: 16),
+                                
+                                // Phone input container
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(25),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 2,
+                                        blurRadius: 8,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
                                   child: Row(
                                     children: [
+                                      // Mexico flag and +52 section
                                       Container(
-                                        width: 20,
-                                        height: 14,
+                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(2),
+                                          color: Color(0xFFC31F39),
+                                          borderRadius: BorderRadius.circular(25),
                                         ),
-                                        child: Image.network(
-                                          'https://flagcdn.com/w20/mx.png',
-                                          width: 20,
-                                          height: 14,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Icon(Icons.flag, color: Colors.white, size: 20);
-                                          },
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 24,
+                                              height: 16,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(2),
+                                              ),
+                                              child: Image.network(
+                                                'https://flagcdn.com/w40/mx.png',
+                                                width: 24,
+                                                height: 16,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return Container(
+                                                    width: 24,
+                                                    height: 16,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.green,
+                                                      borderRadius: BorderRadius.circular(2),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        'MX',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 8,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              '+52',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'Lexend Deca',
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        '+52',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Lexend Deca',
+                                      
+                                      // Phone number input
+                                      Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                          child: TextField(
+                                            controller: _phoneController,
+                                            decoration: InputDecoration(
+                                              hintText: '55 1234 5678',
+                                              hintStyle: TextStyle(
+                                                fontFamily: 'Lexend Deca',
+                                                color: Colors.grey.shade400,
+                                                fontSize: 16,
+                                              ),
+                                              border: InputBorder.none,
+                                            ),
+                                            keyboardType: TextInputType.phone,
+                                            style: TextStyle(
+                                              fontFamily: 'Lexend Deca',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                              LengthLimitingTextInputFormatter(10),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  child: TextField(
-                                    controller: _phoneController,
-                                    decoration: InputDecoration(
-                                      hintText: '55 1234 5678',
-                                      hintStyle: TextStyle(
-                                        fontFamily: 'Lexend Deca',
-                                        color: Colors.grey.shade400,
-                                      ),
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                    ),
-                                    keyboardType: TextInputType.phone,
+                                
+                                SizedBox(height: 12),
+                                
+                                // Texto centrado correctamente
+                                Center(
+                                  child: Text(
+                                    'Te enviaremos un código de acceso por SMS o\nWhatsApp.',
                                     style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
                                       fontFamily: 'Lexend Deca',
-                                      fontSize: 16,
                                     ),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(10),
-                                    ],
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          
-                          SizedBox(height: 12),
-                          
-                          Text(
-                            'Te enviaremos un código de acceso por SMS o WhatsApp.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                              fontFamily: 'Lexend Deca',
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          
-                          SizedBox(height: 32),
-                          
-                          // Send button
-                          ElevatedButton(
-                            onPressed: _isLoading ? null : _sendOTP,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC31F39),
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
+                            
+                            // Send button
+                            Container(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: _isLoading ? null : _sendOTP,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFFC31F39),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  elevation: 3,
+                                ),
+                                child: _isLoading
+                                    ? SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : Text(
+                                        'Enviar Código',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          fontFamily: 'Lexend Deca',
+                                        ),
+                                      ),
                               ),
                             ),
-                            child: _isLoading
-                                ? SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : Text(
-                                    'Enviar Código',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                      fontFamily: 'Lexend Deca',
-                                    ),
-                                  ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
+                ],
+              ),
+              
+              // CARPA SUPERPUESTA CON Z-INDEX ALTO
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.45 - 150,
+                left: 0,
+                right: 0,
+                child: AspectRatio(
+                  aspectRatio: 1.5,
+                  child: Image.asset(
+                    'assets/images/carpa.png',
+                    fit: BoxFit.fitWidth,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        height: 200,
+                        child: CustomPaint(
+                          painter: AwningPainter(),
+                          size: Size(MediaQuery.of(context).size.width, 200),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -353,7 +417,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       _focusNodes[index - 1].requestFocus();
     }
 
-    // Auto-verify when all digits are entered
     if (index == 5 && value.isNotEmpty) {
       _verifyOTP();
     }
@@ -374,7 +437,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     try {
       print('🔍 Verificando OTP: $otp para ${widget.phoneNumber}');
       
-      // Llamada real a la API de verificación
       final response = await http.post(
         Uri.parse('http://10.0.2.2:5274/api/auth/verify-otp'),
         headers: {
@@ -396,7 +458,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => TualiHomeScreen(token: data['token']),
+              builder: (context) => TualiHomeScreen(token: data['token'] ?? 'demo_token'),
             ),
           );
         } else {
@@ -436,191 +498,241 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFFC31F39),
-        ),
-        child: CustomPaint(
-          painter: GridPainter(),
-          child: SafeArea(
-            child: Column(
-              children: [
-                // Top section with logo and back button
-                Expanded(
-                  flex: 4,
-                  child: Stack(
-                    children: [
-                      // Back button
-                      Positioned(
-                        top: 20,
-                        left: 20,
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white, size: 28),
-                          onPressed: () => Navigator.pop(context),
-                        ),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              // Layout base con Column
+              Column(
+                children: [
+                  // Top section with grid only
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF5F5F5),
                       ),
-                      // Logo
-                      Center(
-                        child: Container(
-                          width: 150,
-                          height: 150,
-                          child: Center(
-                            child: Text(
-                              'túali',
-                              style: TextStyle(
-                                fontSize: 42,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: 'Lexend Deca',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                // Bottom section with card
-                Expanded(
-                  flex: 6,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+                      child: CustomPaint(
+                        painter: GridPainter(),
+                        size: Size.infinite,
                       ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 20),
-                          
-                          Text(
-                            'Ingresa el código de\nverificación',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontFamily: 'Lexend Deca',
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          
-                          SizedBox(height: 32),
-                          
-                          // Code input fields
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List.generate(6, (index) {
-                              return Container(
-                                width: 35,
-                                height: 45,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: _focusNodes[index].hasFocus 
-                                          ? Color(0xFFC31F39)
-                                          : Colors.grey.shade400,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _controllers[index],
-                                  focusNode: _focusNodes[index],
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  maxLength: 1,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    counterText: '',
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Lexend Deca',
-                                  ),
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  onChanged: (value) => _onDigitChanged(index, value),
-                                ),
-                              );
-                            }),
-                          ),
-                          
-                          SizedBox(height: 24),
-                          
-                          Text(
-                            '¿No recibiste el código?',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                              fontFamily: 'Lexend Deca',
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          
-                          SizedBox(height: 8),
-                          
-                          TextButton(
-                            onPressed: () {
-                              _showSnackBar('Función de reenvío no implementada aún', Colors.orange);
-                            },
-                            child: Text(
-                              'Reenviar el código.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFC31F39),
-                                decoration: TextDecoration.underline,
-                                fontFamily: 'Lexend Deca',
-                              ),
-                            ),
-                          ),
-                          
-                          SizedBox(height: 32),
-                          
-                          // Verify button
-                          ElevatedButton(
-                            onPressed: _isLoading ? null : _verifyOTP,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFC31F39),
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : Text(
-                                    'Verificar',
+                  ),
+                  
+                  // Bottom white section
+                  Expanded(
+                    flex: 6,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            // Logo túali en la sección blanca
+                            Container(
+                              width: 120,
+                              height: 60,
+                              child: Image.asset(
+                                'assets/images/tuali_logo.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Text(
+                                    'túali',
                                     style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFC31F39),
                                       fontFamily: 'Lexend Deca',
                                     ),
+                                  );
+                                },
+                              ),
+                            ),
+                            
+                            Text(
+                              'Ingresa el código de\nverificación',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontFamily: 'Lexend Deca',
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            
+                            // OTP input container
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(25),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    spreadRadius: 2,
+                                    blurRadius: 8,
+                                    offset: Offset(0, 2),
                                   ),
-                          ),
-                        ],
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: List.generate(6, (index) {
+                                  return Container(
+                                    width: 35,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: _controllers[index].text.isNotEmpty 
+                                              ? Color(0xFFC31F39)
+                                              : Colors.grey.shade300,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: TextField(
+                                      controller: _controllers[index],
+                                      focusNode: _focusNodes[index],
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      maxLength: 1,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        counterText: '',
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Lexend Deca',
+                                        color: Colors.black,
+                                      ),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      onChanged: (value) => _onDigitChanged(index, value),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                            
+                            Column(
+                              children: [
+                                Text(
+                                  '¿No recibiste el código?',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade600,
+                                    fontFamily: 'Lexend Deca',
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    _showSnackBar('Código reenviado', Colors.green);
+                                  },
+                                  child: Text(
+                                    'Reenviar el código.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFFC31F39),
+                                      decoration: TextDecoration.underline,
+                                      fontFamily: 'Lexend Deca',
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            
+                            // Verify button
+                            Container(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: _isLoading ? null : _verifyOTP,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFFC31F39),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  elevation: 3,
+                                ),
+                                child: _isLoading
+                                    ? SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : Text(
+                                        'Verificar',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          fontFamily: 'Lexend Deca',
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+                ],
+              ),
+              
+              // CARPA SUPERPUESTA CON Z-INDEX ALTO
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.45 - 150,
+                left: 0,
+                right: 0,
+                child: AspectRatio(
+                  aspectRatio: 1.5,
+                  child: Image.asset(
+                    'assets/images/carpa.png',
+                    fit: BoxFit.fitWidth,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        height: 200,
+                        child: CustomPaint(
+                          painter: AwningPainter(),
+                          size: Size(MediaQuery.of(context).size.width, 200),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ],
-            ),
+              ),
+              
+              // Back button positioned over everything
+              SafeArea(
+                child: Positioned(
+                  top: 20,
+                  left: 20,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.black54, size: 28),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -628,7 +740,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   }
 }
 
-// Nueva pantalla Home con el diseño bonito de TUALI
 class TualiHomeScreen extends StatelessWidget {
   final String token;
 
@@ -655,13 +766,23 @@ class TualiHomeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       // Logo and title
-                      Text(
-                        'túali',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontFamily: 'Lexend Deca',
+                      Container(
+                        width: 100,
+                        height: 60,
+                        child: Image.asset(
+                          'assets/images/tuali_logo_white.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Text(
+                              'túali',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontFamily: 'Lexend Deca',
+                              ),
+                            );
+                          },
                         ),
                       ),
                       
@@ -937,12 +1058,12 @@ class TualiHomeScreen extends StatelessWidget {
   }
 }
 
-// Custom painter for grid background
+// Grid painter for background
 class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.grey.shade300
       ..strokeWidth = 1;
 
     const spacing = 40.0;
@@ -970,7 +1091,38 @@ class GridPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-// Custom clipper for wave shape
+// Fallback awning painter if carpa.png not found
+class AwningPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final awningPaint = Paint()..color = Color(0xFFC31F39);
+    final awningWhitePaint = Paint()..color = Colors.white;
+    
+    double stripeWidth = size.width / 7;
+    
+    // Draw alternating red and white stripes
+    for (int i = 0; i < 7; i++) {
+      double left = i * stripeWidth;
+      double right = (i + 1) * stripeWidth;
+      
+      // Create curved awning shape for each stripe
+      Path stripePath = Path();
+      stripePath.moveTo(left, 0);
+      stripePath.lineTo(right, 0);
+      stripePath.lineTo(right - stripeWidth / 4, size.height);
+      stripePath.lineTo(left - stripeWidth / 4, size.height);
+      stripePath.close();
+      
+      // Alternate colors
+      canvas.drawPath(stripePath, i % 2 == 0 ? awningPaint : awningWhitePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+// Custom clipper for wave shape in home screen
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
