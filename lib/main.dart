@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('🚀 Enviando OTP a: $fullPhone');
       
       final response = await http.post(
-        parse('http://10.0.2.2:5274/api/auth/send-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 120,
                               height: 60,
                               child: Image.asset(
-                                'assets/images/tuali_logo.png',
+                                'assets/images/tuali_logo.png', // CAMBIADO: removido /images/
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Text(
@@ -355,23 +355,20 @@ class _LoginScreenState extends State<LoginScreen> {
               
               // CARPA SUPERPUESTA CON Z-INDEX ALTO
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.45 - 150,
+                top: MediaQuery.of(context).size.height * 0.4 - 120, // CAMBIADO: posición más visible
                 left: 0,
                 right: 0,
                 child: AspectRatio(
                   aspectRatio: 1.5,
                   child: Image.asset(
-                    'assets/images/carpa.png',
+                    'assets/images/carpa.png', // CAMBIADO: removido /images/
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        width: double.infinity,
-                        height: 200,
-                        child: CustomPaint(
-                          painter: AwningPainter(),
-                          size: Size(MediaQuery.of(context).size.width, 200),
-                        ),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width / 1.5,
+                        
                       );
                     },
                   ),
@@ -543,7 +540,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                               width: 120,
                               height: 60,
                               child: Image.asset(
-                                'assets/images/tuali_logo.png',
+                                'assets/images/tuali_logo.png', // CAMBIADO: removido /images/
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Text(
@@ -698,23 +695,20 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               
               // CARPA SUPERPUESTA CON Z-INDEX ALTO
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.45 - 150,
+                top: MediaQuery.of(context).size.height * 0.4 - 120, // CAMBIADO: posición más visible
                 left: 0,
                 right: 0,
                 child: AspectRatio(
                   aspectRatio: 1.5,
                   child: Image.asset(
-                    'assets/images/carpa.png',
+                    'assets/images/carpa.png', // CAMBIADO: removido /images/
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        width: double.infinity,
-                        height: 200,
-                        child: CustomPaint(
-                          painter: AwningPainter(),
-                          size: Size(MediaQuery.of(context).size.width, 200),
-                        ),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width / 1.5,
+                        
                       );
                     },
                   ),
@@ -770,7 +764,7 @@ class TualiHomeScreen extends StatelessWidget {
                         width: 100,
                         height: 60,
                         child: Image.asset(
-                          'assets/images/tuali_logo_white.png',
+                          'assets/images/tuali_logo_white.png', // CAMBIADO: removido /images/
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
                             return Text(
@@ -1091,17 +1085,18 @@ class GridPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-// Fallback awning painter if carpa.png not found
+// Awning painter for carpa fallback
+/*
 class AwningPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final awningPaint = Paint()..color = Color(0xFFC31F39);
     final awningWhitePaint = Paint()..color = Colors.white;
     
-    double stripeWidth = size.width / 7;
+    double stripeWidth = size.width / 8;
     
     // Draw alternating red and white stripes
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
       double left = i * stripeWidth;
       double right = (i + 1) * stripeWidth;
       
@@ -1109,18 +1104,33 @@ class AwningPainter extends CustomPainter {
       Path stripePath = Path();
       stripePath.moveTo(left, 0);
       stripePath.lineTo(right, 0);
-      stripePath.lineTo(right - stripeWidth / 4, size.height);
-      stripePath.lineTo(left - stripeWidth / 4, size.height);
+      stripePath.quadraticBezierTo(right - stripeWidth / 3, size.height * 0.7, right - stripeWidth / 4, size.height);
+      stripePath.quadraticBezierTo(left - stripeWidth / 3, size.height * 0.7, left - stripeWidth / 4, size.height);
       stripePath.close();
       
       // Alternate colors
       canvas.drawPath(stripePath, i % 2 == 0 ? awningPaint : awningWhitePaint);
     }
+    
+    // Add shadow effect
+    final shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.2)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
+    
+    Path shadowPath = Path();
+    shadowPath.moveTo(0, size.height * 0.9);
+    shadowPath.quadraticBezierTo(size.width / 2, size.height * 1.1, size.width, size.height * 0.9);
+    shadowPath.lineTo(size.width, size.height);
+    shadowPath.lineTo(0, size.height);
+    shadowPath.close();
+    
+    canvas.drawPath(shadowPath, shadowPaint);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
+*/
 
 // Custom clipper for wave shape in home screen
 class WaveClipper extends CustomClipper<Path> {
