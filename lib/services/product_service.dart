@@ -9,6 +9,7 @@ class Product {
   final String description;
   final double price;
   final String category;
+  final String businessUnit;
   final String imageUrl;
   final bool available;
 
@@ -18,6 +19,7 @@ class Product {
     required this.description,
     required this.price,
     required this.category,
+    required this.businessUnit,
     required this.imageUrl,
     required this.available,
   });
@@ -29,6 +31,7 @@ class Product {
       description: json['description'] ?? '',
       price: _parsePrice(json['price']),
       category: json['category'] ?? '',
+      businessUnit: json['businessUnit'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
       available: json['available'] ?? true,
     );
@@ -153,7 +156,7 @@ class ProductService {
   // Cambia esta URL según tu configuración:
   // Para emulador Android: 'http://10.0.2.2:5274'
   // Para iOS/Web: 'http://localhost:5274'
-  static const String baseUrl = 'http://localhost:5274/api';
+  static const String baseUrl = 'http://10.0.2.2:5274/api';
   
   // Obtener todos los productos
   static Future<List<Product>> getProducts() async {
@@ -379,5 +382,97 @@ class ProductService {
       print('❌ Error limpiando carrito: $e');
       return false;
     }
+  }
+
+  // Obtener todas las unidades de negocio
+  static Future<List<BusinessUnit>> getBusinessUnits() async {
+    try {
+      print('🔍 Obteniendo unidades de negocio desde: $baseUrl/business-units');
+      final response = await http.get(
+        Uri.parse('$baseUrl/business-units'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('📡 Response status: ${response.statusCode}');
+      print('📡 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          List<BusinessUnit> businessUnits = (data['businessUnits'] as List)
+              .map((json) => BusinessUnit.fromJson(json))
+              .toList();
+          print('✅ Unidades de negocio obtenidas: ${businessUnits.length}');
+          return businessUnits;
+        }
+      }
+      print('❌ Error en respuesta del servidor al obtener unidades de negocio');
+      return [];
+    } catch (e) {
+      print('❌ Error obteniendo unidades de negocio: $e');
+      return [];
+    }
+  }
+
+  // Obtener productos por unidad de negocio
+  static Future<List<Product>> getProductsByBusinessUnit(String businessUnit) async {
+    try {
+      print('🔍 Obteniendo productos de la unidad de negocio: $businessUnit');
+      final response = await http.get(
+        Uri.parse('$baseUrl/products/business-unit/$businessUnit'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('📡 Response status: ${response.statusCode}');
+      print('📡 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          List<Product> products = (data['products'] as List)
+              .map((json) => Product.fromJson(json))
+              .toList();
+          print('✅ Productos por unidad de negocio obtenidos: ${products.length}');
+          return products;
+        }
+      }
+      print('❌ Error en respuesta del servidor al obtener productos por unidad de negocio');
+      return [];
+    } catch (e) {
+      print('❌ Error obteniendo productos por unidad de negocio: $e');
+      return [];
+    }
+  }
+
+}
+
+// REEMPLAZAR el BusinessUnit existente por este:
+class BusinessUnit {
+  final String name;
+  final String displayName;
+  final int productCount;
+  final String logo;
+  final String color;
+
+  BusinessUnit({
+    required this.name,
+    required this.displayName,
+    required this.productCount,
+    required this.logo,
+    required this.color,
+  });
+
+  factory BusinessUnit.fromJson(Map<String, dynamic> json) {
+    return BusinessUnit(
+      name: json['name'] ?? '',
+      displayName: json['displayName'] ?? json['name'] ?? '',
+      productCount: json['productCount'] ?? 0,
+      logo: json['logo'] ?? '',
+      color: json['color'] ?? '#757575',
+    );
   }
 }
