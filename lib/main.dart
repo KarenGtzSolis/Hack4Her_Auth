@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('🚀 Enviando OTP a: $fullPhone');
       
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
+        Uri.parse('http://localhost:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -440,7 +440,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       print('🔍 Verificando OTP: $otp para ${widget.phoneNumber}');
       
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5274/api/auth/verify-otp'),
+        Uri.parse('http://localhost:5274/api/auth/verify-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -514,7 +514,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     child: Container(
                       width: double.infinity,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFF5F5F5),
+                        color: Colors.white,
                       ),
                       child: CustomPaint(
                         painter: GridPainter(),
@@ -529,7 +529,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     child: Container(
                       width: double.infinity,
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
@@ -832,112 +832,95 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF5F5F5),
       body: Column(
         children: [
-          // Header with wave shape
-          ClipPath(
-            clipper: WaveClipper(),
-            child: Container(
-              height: 280,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color(0xFFC31F39),
+          // Header rojo con categorías - EXACTO COMO FIGMA
+          Container(
+            height: 210,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color(0xFFC31F39),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
               ),
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      // Logo and title
-                      SizedBox(
-                        width: 100,
-                        height: 60,
-                        child: Image.asset(
-                          'assets/images/tuali_logo_white.png',
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Text(
-                              'túali',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: 'Lexend Deca',
-                              ),
-                            );
-                          },
-                        ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  children: [
+                    // Logo túali
+                    SizedBox(
+                      width: 80,
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/tuali_logo_white.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            'túali',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                          );
+                        },
                       ),
-                      
-                      const SizedBox(height: 8),
-                      
-                      const Text(
-                        "let's start",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white70,
-                          fontFamily: 'Lexend Deca',
+                    ),
+                    
+                    const SizedBox(height: 30),
+                    
+                    // Tres categorías en círculos como Figma
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildCategoryItem(
+                          icon: Icons.local_drink,
+                          label: 'Refrescos',
+                          isSelected: _selectedCategory == 'Refrescos' || _selectedCategory == 'Todos',
+                          onTap: () => _filterByCategory('Refrescos'),
                         ),
-                      ),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Category selector horizontal
-                      if (_categories.isNotEmpty)
-                        Container(
-                          height: 40,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _categories.length,
-                            itemBuilder: (context, index) {
-                              final category = _categories[index];
-                              final isSelected = category == _selectedCategory;
-                              
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 4),
-                                child: FilterChip(
-                                  label: Text(
-                                    category,
-                                    style: TextStyle(
-                                      color: isSelected ? Colors.white : Color(0xFFC31F39),
-                                      fontFamily: 'Lexend Deca',
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  selected: isSelected,
-                                  onSelected: (_) => _filterByCategory(category),
-                                  backgroundColor: Colors.white,
-                                  selectedColor: Color(0xFFC31F39),
-                                  checkmarkColor: Colors.white,
-                                ),
-                              );
-                            },
-                          ),
+                        _buildCategoryItem(
+                          icon: Icons.local_drink_outlined,
+                          label: 'Jugos',
+                          isSelected: _selectedCategory == 'Jugos',
+                          onTap: () => _filterByCategory('Jugos'),
                         ),
-                    ],
-                  ),
+                        _buildCategoryItem(
+                          icon: Icons.water_drop,
+                          label: 'Agua',
+                          isSelected: _selectedCategory == 'Agua',
+                          onTap: () => _filterByCategory('Agua'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
           
-          // Content
+          // Contenido con productos
           Expanded(
+
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Coca Cola promo
+                  // Promo Coca Cola - EXACTA COMO FIGMA
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -952,7 +935,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                               const Text(
                                 'Comparte\nuna Coca',
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                   fontFamily: 'Lexend Deca',
@@ -970,17 +953,53 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.local_drink,
-                            color: Color(0xFFC31F39),
-                            size: 32,
-                          ),
+                        // Imágenes de productos como en Figma
+                        Row(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 70,
+                              child: Image.asset(
+                                'assets/images/products/coca_bottle.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFC31F39).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.local_drink,
+                                      color: Color(0xFFC31F39),
+                                      size: 30,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 50,
+                              height: 70,
+                              child: Image.asset(
+                                'assets/images/products/coca_can.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFC31F39).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.local_drink,
+                                      color: Color(0xFFC31F39),
+                                      size: 30,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -988,71 +1007,23 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                   
                   const SizedBox(height: 24),
                   
-                  // Header con contador de carrito
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Productos ${_selectedCategory != 'Todos' ? '- $_selectedCategory' : ''}',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontFamily: 'Lexend Deca',
-                        ),
+                  // Título "Productos"
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Productos',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Lexend Deca',
                       ),
-                      // Carrito badge
-                      GestureDetector(
-                        onTap: () async {
-                          // Recarga el carrito antes de navegar
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CartScreen(
-                                phoneNumber: '+528120730053',
-                              ),
-                            ),
-                          );
-                          // Opcional: podrías recargar el contador del carrito aquí si lo deseas
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFC31F39),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.shopping_cart, color: Colors.white, size: 20),
-                              if (_cartItemCount > 0) ...[
-                                SizedBox(width: 4),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    '$_cartItemCount',
-                                    style: TextStyle(
-                                      color: Color(0xFFC31F39),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   
                   const SizedBox(height: 16),
                   
-                  // Products grid
+                  // Grid de productos - EXACTO COMO FIGMA
                   Expanded(
                     child: _isLoading
                         ? Center(
@@ -1072,12 +1043,12 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                                 ),
                               )
                             : GridView.builder(
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 0.85,
-                              ),
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                  childAspectRatio: 0.85,
+                                ),
                                 itemCount: _filteredProducts.length,
                                 itemBuilder: (context, index) {
                                   final product = _filteredProducts[index];
@@ -1092,51 +1063,103 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
         ],
       ),
       
-      // Bottom navigation
+      // Bottom navigation - EXACTO COMO FIGMA
       bottomNavigationBar: Container(
-        height: 80,
+        height: 90,
         decoration: const BoxDecoration(
           color: Color(0xFFC31F39),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildNavItem(Icons.home, 'Inicio', true),
-            _buildNavItem(Icons.grid_view, 'Productos', false),
-            _buildNavItem(Icons.shopping_bag, 'Carrito', false),
-            _buildNavItem(Icons.menu, 'Menú', false),
-          ],
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNavItem(Icons.home, 'Inicio', true, () {}),
+              _buildNavItem(Icons.apps, 'Productos', false, () {}),
+              _buildNavItem(Icons.shopping_cart, 'Carrito', false, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(
+                      phoneNumber: '+528120730053',
+                    ),
+                  ),
+                );
+              }),
+              _buildNavItem(Icons.shopping_bag, 'Pedidos', false, () {}),
+              _buildNavItem(Icons.menu, 'Menú', false, () {}),
+            ],
+          ),
         ),
       ),
     );
   }
   
+  // Widget para categorías en círculos como Figma
+  Widget _buildCategoryItem({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/images/categories/${label.toLowerCase()}.png',
+                width: 40,
+                height: 40,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    icon,
+                    color: Color(0xFFC31F39),
+                    size: 32,
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontFamily: 'Lexend Deca',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // Widget para productos - EXACTO COMO FIGMA
   Widget _buildProductCard(Product product) {
-    Color getCategoryColor(String category) {
-      switch (category.toLowerCase()) {
-        case 'refrescos':
-          return Color(0xFFC31F39);
-        case 'jugos':
-          return Colors.orange;
-        case 'agua':
-          return Colors.blue;
-        case 'deportivas':
-          return Colors.green;
-        default:
-          return Colors.grey;
-      }
-    }
-
-    final categoryColor = getCategoryColor(product.category);
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -1146,99 +1169,90 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Imagen del producto
+            // Círculo de fondo con imagen del producto
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Container(
-                width: double.infinity,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  color: categoryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: _getProductBackgroundColor(product.name),
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.local_drink,
-                  color: categoryColor,
-                  size: 35,
+                child: Center(
+                  child: Image.asset(
+                    _getProductImagePath(product),
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.local_drink,
+                        color: _getProductColor(product.name),
+                        size: 35,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
             
-            SizedBox(height: 8),
+            const SizedBox(height: 12),
             
             // Información del producto
-            Expanded(
-              flex: 2,
+            Flexible(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Nombre del producto
                   Text(
                     product.name,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                       fontFamily: 'Lexend Deca',
                     ),
+                    textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   
-                  // Descripción
+                  // Precio
                   Text(
-                    product.description,
+                    '\$ ${product.price.toStringAsFixed(1)}',
                     style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey.shade600,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                       fontFamily: 'Lexend Deca',
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                   
-                  SizedBox(height: 4),
-                  
-                  // Precio y botón
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Precio
-                      Expanded(
-                        child: Text(
-                          '\${product.price.toStringAsFixed(0)}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: categoryColor,
-                            fontFamily: 'Lexend Deca',
-                          ),
-                        ),
+                  // Botón agregar - círculo rojo con +
+                  Container(
+                    width: 32,
+                    height: 32,
+                    child: ElevatedButton(
+                      onPressed: () => _addToCart(product),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC31F39),
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.zero,
+                        elevation: 2,
                       ),
-                      
-                      // Botón agregar
-                      Container(
-                        width: 28,
-                        height: 28,
-                        child: ElevatedButton(
-                          onPressed: () => _addToCart(product),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: categoryColor,
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                        ),
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 18,
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -1249,20 +1263,25 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
     );
   }
   
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
+  Color _getProductBackgroundColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Color(0xFFE3F2FD);
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Color(0xFFFFF3E0);
+    return Color(0xFFF3E5F5);
+  }
+  
+  Color _getProductColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Colors.blue;
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Colors.orange;
+    return Color(0xFFC31F39);
+  }
+  
+  String _getProductImagePath(Product product) {
+    return 'assets/images/products/${product.imageUrl}';
+  }
+  
+  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
     return GestureDetector(
-      onTap: () {
-        if (label == 'Carrito') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CartScreen(
-                phoneNumber: '+528120730053',
-              ),
-            ),
-          );
-        }
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -1277,9 +1296,10 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 10,
                 color: isActive ? Colors.white : Colors.white70,
                 fontFamily: 'Lexend Deca',
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],
@@ -1302,6 +1322,7 @@ class _CartScreenState extends State<CartScreen> {
   Cart? _cart;
   bool _isLoading = true;
   bool _isUpdating = false;
+  List<Product> _allProducts = []; 
 
   @override
   void initState() {
@@ -1316,8 +1337,10 @@ class _CartScreenState extends State<CartScreen> {
 
     try {
       final cart = await ProductService.getCart(widget.phoneNumber);
+      final products = await ProductService.getProducts(); // ← AGREGAR ESTA LÍNEA
       setState(() {
         _cart = cart;
+        _allProducts = products; // ← AGREGAR ESTA LÍNEA
         _isLoading = false;
       });
     } catch (e) {
@@ -1344,21 +1367,6 @@ class _CartScreenState extends State<CartScreen> {
 
       if (success) {
         await _loadCart();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Cantidad actualizada'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 1),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error actualizando cantidad'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
-        );
       }
     } catch (e) {
       print('❌ Error actualizando cantidad: $e');
@@ -1369,153 +1377,81 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  Future<void> _removeItem(int productId, String productName) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Eliminar producto',
-          style: TextStyle(fontFamily: 'Lexend Deca'),
-        ),
-        content: Text(
-          '¿Deseas eliminar $productName del carrito?',
-          style: TextStyle(fontFamily: 'Lexend Deca'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancelar',
-              style: TextStyle(
-                fontFamily: 'Lexend Deca',
-                color: Colors.grey,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              'Eliminar',
-              style: TextStyle(
-                fontFamily: 'Lexend Deca',
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        final success = await ProductService.removeFromCart(productId, widget.phoneNumber);
-        
-        if (success) {
-          await _loadCart();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$productName eliminado del carrito'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      } catch (e) {
-        print('❌ Error eliminando producto: $e');
-      }
-    }
-  }
-
-  Future<void> _clearCart() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Vaciar carrito',
-          style: TextStyle(fontFamily: 'Lexend Deca'),
-        ),
-        content: Text(
-          '¿Deseas eliminar todos los productos del carrito?',
-          style: TextStyle(fontFamily: 'Lexend Deca'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancelar',
-              style: TextStyle(
-                fontFamily: 'Lexend Deca',
-                color: Colors.grey,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              'Vaciar',
-              style: TextStyle(
-                fontFamily: 'Lexend Deca',
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        final success = await ProductService.clearCart(widget.phoneNumber);
-        
-        if (success) {
-          await _loadCart();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Carrito vaciado'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      } catch (e) {
-        print('❌ Error vaciando carrito: $e');
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
-      appBar: AppBar(
-        title: Text(
-          'Mi Carrito',
-          style: TextStyle(
-            fontFamily: 'Lexend Deca',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Color(0xFFC31F39),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          if (_cart != null && _cart!.items.isNotEmpty)
-            IconButton(
-              icon: Icon(Icons.delete_outline),
-              onPressed: _clearCart,
-              tooltip: 'Vaciar carrito',
+      body: Column(
+        children: [
+          // Header rojo igual que home - EXACTO COMO FIGMA
+          Container(
+            height: 140,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color(0xFFC31F39),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
             ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  children: [
+                    // Logo túali
+                    SizedBox(
+                      width: 80,
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/tuali_logo_white.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            'túali',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Título "Mi carrito"
+                    Text(
+                      'Mi carrito',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'Lexend Deca',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          // Contenido del carrito
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFC31F39),
+                    ),
+                  )
+                : _cart == null || _cart!.items.isEmpty
+                    ? _buildEmptyCart()
+                    : _buildCartContent(),
+          ),
         ],
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFFC31F39),
-              ),
-            )
-          : _cart == null || _cart!.items.isEmpty
-              ? _buildEmptyCart()
-              : _buildCartContent(),
     );
   }
 
@@ -1538,16 +1474,6 @@ class _CartScreenState extends State<CartScreen> {
               color: Colors.grey[600],
               fontFamily: 'Lexend Deca',
             ),
-          ),
-          SizedBox(height: 12),
-          Text(
-            'Agrega productos para empezar tu pedido',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[500],
-              fontFamily: 'Lexend Deca',
-            ),
-            textAlign: TextAlign.center,
           ),
           SizedBox(height: 32),
           ElevatedButton(
@@ -1575,254 +1501,156 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildCartContent() {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(16),
-            itemCount: _cart!.items.length,
-            itemBuilder: (context, index) {
-              final item = _cart!.items[index];
-              return _buildCartItem(item);
-            },
-          ),
-        ),
-        _buildCartSummary(),
-      ],
-    );
-  }
-
-  Widget _buildCartItem(CartItem item) {
-    Color getProductColor(String productName) {
-      if (productName.toLowerCase().contains('coca')) return Color(0xFFC31F39);
-      if (productName.toLowerCase().contains('sprite')) return Colors.green;
-      if (productName.toLowerCase().contains('fanta')) return Colors.orange;
-      if (productName.toLowerCase().contains('powerade')) return Colors.blue;
-      if (productName.toLowerCase().contains('valle')) return Colors.orange;
-      if (productName.toLowerCase().contains('agua') || productName.toLowerCase().contains('ciel') || productName.toLowerCase().contains('smart')) return Colors.blue;
-      return Colors.grey;
-    }
-
-    final productColor = getProductColor(item.productName);
-
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: productColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.local_drink,
-              color: productColor,
-              size: 30,
-            ),
-          ),
-          SizedBox(width: 16),
+          // Lista de productos - EXACTA COMO FIGMA
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.productName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'Lexend Deca',
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '\${item.price.toStringAsFixed(0)} c/u',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    fontFamily: 'Lexend Deca',
-                  ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        _buildQuantityButton(
-                          icon: Icons.remove,
-                          onPressed: () => _updateQuantity(item.productId, item.quantity - 1),
-                        ),
-                        Container(
-                          width: 40,
-                          child: Text(
-                            '${item.quantity}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Lexend Deca',
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        _buildQuantityButton(
-                          icon: Icons.add,
-                          onPressed: () => _updateQuantity(item.productId, item.quantity + 1),
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(_cart!.items.length, (index) {
+                  final item = _cart!.items[index];
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
-                    Text(
-                      '\${item.total.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: productColor,
-                        fontFamily: 'Lexend Deca',
-                      ),
+                    child: Row(
+                      children: [
+                        // Círculo con imagen del producto
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: _getCartItemBackgroundColor(item.productName),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              _getCartItemImagePath(item),
+                              width: 35,
+                              height: 40,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.local_drink,
+                                  color: _getCartItemColor(item.productName),
+                                  size: 30,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(width: 16),
+                        
+                        // Información del producto
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                item.productName,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '\$ ${item.price.toStringAsFixed(1)}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Controles de cantidad - círculos rojos como Figma
+                        Row(
+                          children: [
+                            Container(
+                              width: 24,
+                              height: 24,
+                              child: ElevatedButton(
+                                onPressed: () => _updateQuantity(item.productId, item.quantity - 1),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFFC31F39),
+                                  shape: CircleBorder(),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Icon(
+                                  Icons.remove,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 40,
+                              child: Text(
+                                '${item.quantity}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Container(
+                              width: 24,
+                              height: 24,
+                              child: ElevatedButton(
+                                onPressed: () => _updateQuantity(item.productId, item.quantity + 1),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFFC31F39),
+                                  shape: CircleBorder(),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  );
+                }),
+              ),
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: () => _removeItem(item.productId, item.productName),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuantityButton({required IconData icon, required VoidCallback onPressed}) {
-    return Container(
-      width: 32,
-      height: 32,
-      child: ElevatedButton(
-        onPressed: _isUpdating ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFFC31F39),
-          shape: CircleBorder(),
-          padding: EdgeInsets.zero,
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCartSummary() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Subtotal (${_cart!.itemCount} productos)',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Lexend Deca',
-                ),
-              ),
-              Text(
-                '\${_cart!.total.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Lexend Deca',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Envío',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Lexend Deca',
-                ),
-              ),
-              Text(
-                'GRATIS',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontFamily: 'Lexend Deca',
-                ),
-              ),
-            ],
-          ),
-          Divider(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Total',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Lexend Deca',
-                ),
-              ),
-              Text(
-                '\${_cart!.total.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFC31F39),
-                  fontFamily: 'Lexend Deca',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 24),
-          SizedBox(
+          
+          // Botón "Realizar Pedido" - EXACTO COMO FIGMA
+          Container(
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Funcionalidad de checkout próximamente'),
-                    backgroundColor: Colors.blue,
-                    duration: Duration(seconds: 2),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderDetailsScreen(cart: _cart!),
                   ),
                 );
               },
@@ -1831,15 +1659,313 @@ class _CartScreenState extends State<CartScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
+                elevation: 3,
               ),
               child: Text(
-                'Proceder al Pago',
+                'Realizar Pedido',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontFamily: 'Lexend Deca',
                 ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Color _getCartItemBackgroundColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Color(0xFFE3F2FD);
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Color(0xFFFFF3E0);
+    return Color(0xFFF3E5F5);
+  }
+  
+  Color _getCartItemColor(String productName) {
+    if (productName.toLowerCase().contains('powerade')) return Colors.blue;
+    if (productName.toLowerCase().contains('valle') || productName.toLowerCase().contains('jugo')) return Colors.orange;
+    return Color(0xFFC31F39);
+  }
+  
+  String _getCartItemImagePath(CartItem item) {
+    // Buscar el producto en la lista para obtener su imageUrl
+    final product = _allProducts.firstWhere(
+      (p) => p.id == item.productId,
+      orElse: () => Product(
+        id: 0,
+        name: '',
+        description: '',
+        price: 0.0,
+        category: '',
+        imageUrl: 'default.png',
+        available: false,
+      ),
+    );
+    return 'assets/images/products/${product.imageUrl}';
+  }
+}
+
+// Nueva pantalla de detalles del pedido - EXACTA COMO FIGMA
+class OrderDetailsScreen extends StatelessWidget {
+  final Cart cart;
+
+  const OrderDetailsScreen({Key? key, required this.cart}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFF5F5F5),
+      body: Column(
+        children: [
+          // Header rojo - EXACTO COMO FIGMA
+          Container(
+            height: 160,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color(0xFFC31F39),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  children: [
+                    // Logo túali
+                    SizedBox(
+                      width: 80,
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/tuali_logo_white.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            'túali',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: 'Lexend Deca',
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Título "Detalles del pedido"
+                    Text(
+                      'Detalles del pedido',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'Lexend Deca',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          // Contenido
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Card con información del pedido - EXACTA COMO FIGMA
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        // Ícono de entrega
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFCE4EC),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.local_shipping,
+                            color: Color(0xFFC31F39),
+                            size: 30,
+                          ),
+                        ),
+                        
+                        const SizedBox(width: 16),
+                        
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Pedido del 13 de junio',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Total    \$${cart.total.toStringAsFixed(0)}.00 MXN',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${cart.itemCount} Unidades',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Lista de productos del pedido
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          // Lista de productos
+                          ...cart.items.map((item) => Padding(
+                            padding: EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${item.quantity} x ${item.productName}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontFamily: 'Lexend Deca',
+                                  ),
+                                ),
+                                Text(
+                                  '\$${item.total.toStringAsFixed(0)}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontFamily: 'Lexend Deca',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )).toList(),
+                          
+                          Divider(height: 24),
+                          
+                          // Total a pagar
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Total a pagar:',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                              Text(
+                                '\$${cart.total.toStringAsFixed(0)}',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFC31F39),
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Botón "Proceder al Pago" - EXACTO COMO FIGMA
+                  Container(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Procesando pedido...'),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC31F39),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 3,
+                      ),
+                      child: Text(
+                        'Proceder al Pago',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontFamily: 'Lexend Deca',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1880,30 +2006,4 @@ class GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-// Custom clipper for wave shape in home screen
-class WaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 50);
-    
-    var firstControlPoint = Offset(size.width / 4, size.height);
-    var firstEndPoint = Offset(size.width / 2, size.height - 30);
-    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
-        firstEndPoint.dx, firstEndPoint.dy);
-    
-    var secondControlPoint = Offset(size.width * 3 / 4, size.height - 60);
-    var secondEndPoint = Offset(size.width, size.height - 20);
-    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
-        secondEndPoint.dx, secondEndPoint.dy);
-    
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

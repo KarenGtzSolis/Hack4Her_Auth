@@ -153,7 +153,7 @@ class ProductService {
   // Cambia esta URL según tu configuración:
   // Para emulador Android: 'http://10.0.2.2:5274'
   // Para iOS/Web: 'http://localhost:5274'
-  static const String baseUrl = 'http://10.0.2.2:5274/api';
+  static const String baseUrl = 'http://localhost:5274/api';
   
   // Obtener todos los productos
   static Future<List<Product>> getProducts() async {
