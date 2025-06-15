@@ -21,4 +21,12 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+  fonts:
+    - family: Lexend Deca
+      fonts:
+        - asset: assets/fonts/LexendDeca-Regular.ttf
+        - asset: assets/fonts/LexendDeca-Bold.ttf 
+        - asset: assets/fonts/LexendDeca-Medium.ttf
+        - asset: assets/fonts/LexendDeca-Light.ttf
+        - asset: assets/fonts/LexendDeca-SemiBold.ttf
   uses-material-design: true

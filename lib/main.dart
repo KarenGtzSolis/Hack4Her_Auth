@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 import 'services/product_service.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,13 +21,15 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Lexend Deca',
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LoginScreen(),
+      home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -100,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: color,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -109,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
@@ -121,8 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     flex: 5,
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF5F5F5),
+                        decoration: const BoxDecoration(
+                        color: Colors.white,
                       ),
                       child: CustomPaint(
                         painter: GridPainter(),
@@ -136,27 +140,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     flex: 6,
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             // Logo túali en la sección blanca
-                            Container(
+                            SizedBox(
                               width: 120,
                               height: 60,
                               child: Image.asset(
                                 'assets/images/tuali_logo.png',
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Text(
+                                  return const Text(
                                     'túali',
                                     style: TextStyle(
                                       fontSize: 36,
@@ -169,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             
-                            Text(
+                            const Text(
                               'Inicia Sesión',
                               style: TextStyle(
                                 fontSize: 24,
@@ -182,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   'Ingresa tu número telefónico:',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -191,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 
-                                SizedBox(height: 16),
+                                const SizedBox(height: 16),
                                 
                                 // Phone input container
                                 Container(
@@ -203,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         color: Colors.grey.withOpacity(0.2),
                                         spreadRadius: 2,
                                         blurRadius: 8,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
@@ -211,9 +215,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     children: [
                                       // Mexico flag and +52 section
                                       Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFFC31F39),
+                                          color: const Color(0xFFC31F39),
                                           borderRadius: BorderRadius.circular(25),
                                         ),
                                         child: Row(
@@ -237,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       color: Colors.green,
                                                       borderRadius: BorderRadius.circular(2),
                                                     ),
-                                                    child: Center(
+                                                    child: const Center(
                                                       child: Text(
                                                         'MX',
                                                         style: TextStyle(
@@ -251,8 +255,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 },
                                               ),
                                             ),
-                                            SizedBox(width: 8),
-                                            Text(
+                                            const SizedBox(width: 8),
+                                            const Text(
                                               '+52',
                                               style: TextStyle(
                                                 color: Colors.white,
@@ -268,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       // Phone number input
                                       Expanded(
                                         child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                          padding: const EdgeInsets.symmetric(horizontal: 16),
                                           child: TextField(
                                             controller: _phoneController,
                                             decoration: InputDecoration(
@@ -281,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               border: InputBorder.none,
                                             ),
                                             keyboardType: TextInputType.phone,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontFamily: 'Lexend Deca',
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
@@ -297,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 
-                                SizedBox(height: 12),
+                                const SizedBox(height: 12),
                                 
                                 // Texto centrado correctamente
                                 Center(
@@ -315,20 +319,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             
                             // Send button
-                            Container(
+                            SizedBox(
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _sendOTP,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFFC31F39),
+                                  backgroundColor: const Color(0xFFC31F39),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   elevation: 3,
                                 ),
                                 child: _isLoading
-                                    ? SizedBox(
+                                    ? const SizedBox(
                                         width: 24,
                                         height: 24,
                                         child: CircularProgressIndicator(
@@ -336,7 +340,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                         ),
                                       )
-                                    : Text(
+                                    : const Text(
                                         'Enviar Código',
                                         style: TextStyle(
                                           fontSize: 16,
@@ -367,7 +371,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
-                      return Container(
+                      return SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.width / 1.5,
                       );
@@ -488,7 +492,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: color,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -497,7 +501,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
@@ -509,7 +513,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     flex: 5,
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFF5F5F5),
                       ),
                       child: CustomPaint(
@@ -524,7 +528,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     flex: 6,
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
@@ -532,19 +536,19 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             // Logo túali en la sección blanca
-                            Container(
+                            SizedBox(
                               width: 120,
                               height: 60,
                               child: Image.asset(
                                 'assets/images/tuali_logo.png',
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Text(
+                                  return const Text(
                                     'túali',
                                     style: TextStyle(
                                       fontSize: 36,
@@ -557,7 +561,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                               ),
                             ),
                             
-                            Text(
+                            const Text(
                               'Ingresa el código de\nverificación',
                               style: TextStyle(
                                 fontSize: 22,
@@ -570,7 +574,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             
                             // OTP input container
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(25),
@@ -579,7 +583,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                     color: Colors.grey.withOpacity(0.1),
                                     spreadRadius: 2,
                                     blurRadius: 8,
-                                    offset: Offset(0, 2),
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
@@ -593,7 +597,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                       border: Border(
                                         bottom: BorderSide(
                                           color: _controllers[index].text.isNotEmpty 
-                                              ? Color(0xFFC31F39)
+                                              ? const Color(0xFFC31F39)
                                               : Colors.grey.shade300,
                                           width: 2,
                                         ),
@@ -605,11 +609,11 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                       textAlign: TextAlign.center,
                                       keyboardType: TextInputType.number,
                                       maxLength: 1,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         border: InputBorder.none,
                                         counterText: '',
                                       ),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: 'Lexend Deca',
@@ -639,7 +643,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                   onPressed: () {
                                     _showSnackBar('Código reenviado', Colors.green);
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'Reenviar el código.',
                                     style: TextStyle(
                                       fontSize: 14,
@@ -654,20 +658,20 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             ),
                             
                             // Verify button
-                            Container(
+                            SizedBox(
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _verifyOTP,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFFC31F39),
+                                  backgroundColor: const Color(0xFFC31F39),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   elevation: 3,
                                 ),
                                 child: _isLoading
-                                    ? SizedBox(
+                                    ? const SizedBox(
                                         width: 24,
                                         height: 24,
                                         child: CircularProgressIndicator(
@@ -675,7 +679,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                         ),
                                       )
-                                    : Text(
+                                    : const Text(
                                         'Verificar',
                                         style: TextStyle(
                                           fontSize: 16,
@@ -706,7 +710,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
-                      return Container(
+                      return SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.width / 1.5,
                       );
@@ -721,7 +725,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   top: 20,
                   left: 20,
                   child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.black54, size: 28),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black54, size: 28),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -828,7 +832,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           // Header with wave shape
@@ -837,23 +841,23 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
             child: Container(
               height: 280,
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFC31F39),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
                       // Logo and title
-                      Container(
+                      SizedBox(
                         width: 100,
                         height: 60,
                         child: Image.asset(
                           'assets/images/tuali_logo_white.png',
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
-                            return Text(
+                            return const Text(
                               'túali',
                               style: TextStyle(
                                 fontSize: 32,
@@ -866,9 +870,9 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                         ),
                       ),
                       
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       
-                      Text(
+                      const Text(
                         "let's start",
                         style: TextStyle(
                           fontSize: 16,
@@ -877,7 +881,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                         ),
                       ),
                       
-                      SizedBox(height: 32),
+                      const SizedBox(height: 32),
                       
                       // Category selector horizontal
                       if (_categories.isNotEmpty)
@@ -921,10 +925,69 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
           // Content
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Coca Cola promo
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Comparte\nuna Coca',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Realiza tu pedido\nahora mismo',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  fontFamily: 'Lexend Deca',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.local_drink,
+                            color: Color(0xFFC31F39),
+                            size: 32,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
                   // Header con contador de carrito
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -939,16 +1002,16 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                         ),
                       ),
                       // Carrito badge
-                        GestureDetector(
+                      GestureDetector(
                         onTap: () async {
                           // Recarga el carrito antes de navegar
                           await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CartScreen(
-                            phoneNumber: '+528120730053',
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CartScreen(
+                                phoneNumber: '+528120730053',
+                              ),
                             ),
-                          ),
                           );
                           // Opcional: podrías recargar el contador del carrito aquí si lo deseas
                         },
@@ -987,7 +1050,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                     ],
                   ),
                   
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   
                   // Products grid
                   Expanded(
@@ -1013,7 +1076,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 12,
-                                childAspectRatio: 0.85, // ← Cambio aquí
+                                childAspectRatio: 0.85,
                               ),
                                 itemCount: _filteredProducts.length,
                                 itemBuilder: (context, index) {
@@ -1032,7 +1095,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
       // Bottom navigation
       bottomNavigationBar: Container(
         height: 80,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color(0xFFC31F39),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
@@ -1052,7 +1115,6 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
     );
   }
   
-  // REEMPLAZADO: _buildProductCard
   Widget _buildProductCard(Product product) {
     Color getCategoryColor(String category) {
       switch (category.toLowerCase()) {
@@ -1079,7 +1141,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -1148,7 +1210,7 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                       // Precio
                       Expanded(
                         child: Text(
-                          '\$${product.price.toStringAsFixed(0)}',
+                          '\${product.price.toStringAsFixed(0)}',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -1588,7 +1650,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  '\$${item.price.toStringAsFixed(0)} c/u',
+                  '\${item.price.toStringAsFixed(0)} c/u',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -1624,7 +1686,7 @@ class _CartScreenState extends State<CartScreen> {
                       ],
                     ),
                     Text(
-                      '\$${item.total.toStringAsFixed(0)}',
+                      '\${item.total.toStringAsFixed(0)}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -1696,7 +1758,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
               Text(
-                '\$${_cart!.total.toStringAsFixed(0)}',
+                '\${_cart!.total.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -1740,7 +1802,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
               Text(
-                '\$${_cart!.total.toStringAsFixed(0)}',
+                '\${_cart!.total.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -1792,7 +1854,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey.shade300
+      ..color = const Color(0xFFC31F39)
       ..strokeWidth = 1;
 
     const spacing = 40.0;
