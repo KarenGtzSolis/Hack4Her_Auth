@@ -4,6 +4,11 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'services/product_service.dart';
+// Asegúrate de que BusinessUnit esté exportado desde product_service.dart
+// AGREGAR ESTAS LÍNEAS DESPUÉS DE LOS IMPORTS:
+// Eliminar la definición duplicada de BusinessUnit y usar la del servicio.
+
+
 
 void main() {
   runApp(const MyApp());
@@ -59,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('🚀 Enviando OTP a: $fullPhone');
       
       final response = await http.post(
-        Uri.parse('http://localhost:5274/api/auth/send-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -440,7 +445,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       print('🔍 Verificando OTP: $otp para ${widget.phoneNumber}');
       
       final response = await http.post(
-        Uri.parse('http://localhost:5274/api/auth/verify-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/verify-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -754,37 +759,44 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
   String _selectedCategory = 'Todos';
   bool _isLoading = true;
   int _cartItemCount = 0;
+  List<BusinessUnit> _businessUnits = [];
+  String _selectedBusinessUnit = 'Todos';
+  
 
   @override
   void initState() {
     super.initState();
-    _loadProducts();
+    _loadData();
   }
 
-  Future<void> _loadProducts() async {
+  // REEMPLAZAR todo el método _loadProducts con este:
+Future<void> _loadData() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    // Cargar productos y unidades de negocio
+    final products = await ProductService.getProducts();
+    final businessUnits = await ProductService.getBusinessUnits();
+    final categories = await ProductService.getCategories();
+
     setState(() {
-      _isLoading = true;
+      _allProducts = products;
+      _filteredProducts = products;
+      _businessUnits = businessUnits;
+      _categories = ['Todos', ...categories];
+      _isLoading = false;
     });
 
-    try {
-      final products = await ProductService.getProducts();
-      final categories = await ProductService.getCategories();
-
-      setState(() {
-        _allProducts = products;
-        _filteredProducts = products;
-        _categories = ['Todos', ...categories];
-        _isLoading = false;
-      });
-
-      print('✅ Cargados ${products.length} productos');
-    } catch (e) {
-      print('❌ Error cargando productos: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    print('✅ Cargados ${products.length} productos y ${businessUnits.length} unidades de negocio');
+  } catch (e) {
+    print('❌ Error cargando datos: $e');
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   void _filterByCategory(String category) {
     setState(() {
@@ -797,9 +809,22 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
     });
   }
 
+  // AGREGAR este método después de _filterByCategory:
+  void _filterByBusinessUnit(String businessUnit) {
+    setState(() {
+      _selectedBusinessUnit = businessUnit;
+      _selectedCategory = 'Todos';
+      if (businessUnit == 'Todos') {
+        _filteredProducts = _allProducts;
+      } else {
+        _filteredProducts = _allProducts.where((product) => product.businessUnit == businessUnit).toList();
+      }
+    });
+  }
+
   Future<void> _addToCart(Product product) async {
     try {
-      String phoneNumber = '+528120730053';
+      String phoneNumber = '+528119606624';
       
       final success = await ProductService.addToCart(product.id, 1, phoneNumber);
       
@@ -829,6 +854,163 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
     }
   }
 
+  // AGREGAR ESTOS 4 MÉTODOS:
+
+Widget _buildBusinessUnitsSection() {
+  return Container(
+    height: 120,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Marcas Arca Continental',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'Lexend Deca',
+          ),
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: _businessUnits.isEmpty
+              ? Center(child: Text('Cargando marcas...'))
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _businessUnits.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _buildBusinessUnitCard(
+                        name: 'Todos',
+                        displayName: 'Ver Todo',
+                        color: '#757575',
+                        isSelected: _selectedBusinessUnit == 'Todos',
+                        onTap: () => _filterByBusinessUnit('Todos'),
+                      );
+                    }
+                    final businessUnit = _businessUnits[index - 1];
+                    return _buildBusinessUnitCard(
+                      name: businessUnit.name,
+                      displayName: businessUnit.displayName,
+                      color: businessUnit.color,
+                      isSelected: _selectedBusinessUnit == businessUnit.name,
+                      onTap: () => _filterByBusinessUnit(businessUnit.name),
+                    );
+                  },
+                ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildBusinessUnitCard({
+  required String name,
+  required String displayName,
+  required String color,
+  required bool isSelected,
+  required VoidCallback onTap,
+}) {
+  Color cardColor = Color(int.parse(color.replaceFirst('#', '0xFF')));
+  
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: 100,
+      margin: EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isSelected ? cardColor : Colors.transparent,
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: cardColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: name == 'Todos'
+                  ? Icon(Icons.apps, color: cardColor, size: 28)
+                  : Icon(_getBusinessUnitIcon(name), color: cardColor, size: 28),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            displayName,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isSelected ? cardColor : Colors.black87,
+              fontFamily: 'Lexend Deca',
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+IconData _getBusinessUnitIcon(String businessUnit) {
+  switch (businessUnit.toLowerCase()) {
+    case 'coca-cola':
+      return Icons.local_drink;
+    case 'del valle':
+      return Icons.local_drink_outlined;
+    case 'aguas':
+      return Icons.water_drop;
+    case 'deportivas':
+      return Icons.sports_gymnastics;
+    default:
+      return Icons.store;
+  }
+}
+
+Widget _buildCategoriesSection() {
+  return Container(
+    height: 60,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildCategoryItem(
+          icon: Icons.local_drink,
+          label: 'Refrescos',
+          isSelected: _selectedCategory == 'Refrescos',
+          onTap: () => _filterByCategory('Refrescos'),
+        ),
+        _buildCategoryItem(
+          icon: Icons.local_drink_outlined,
+          label: 'Jugos',
+          isSelected: _selectedCategory == 'Jugos',
+          onTap: () => _filterByCategory('Jugos'),
+        ),
+        _buildCategoryItem(
+          icon: Icons.water_drop,
+          label: 'Agua',
+          isSelected: _selectedCategory == 'Agua',
+          onTap: () => _filterByCategory('Agua'),
+        ),
+      ],
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -836,8 +1018,9 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
       body: Column(
         children: [
           // Header rojo con categorías - EXACTO COMO FIGMA
+          // REEMPLAZAR el Container del header (el que tiene height: 210) por este:
           Container(
-            height: 210,
+            height: 140,
             width: double.infinity,
             decoration: const BoxDecoration(
               color: Color(0xFFC31F39),
@@ -849,7 +1032,8 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Logo túali
                     SizedBox(
@@ -872,138 +1056,38 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                       ),
                     ),
                     
-                    const SizedBox(height: 30),
-                    
-                    // Tres categorías en círculos como Figma
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildCategoryItem(
-                          icon: Icons.local_drink,
-                          label: 'Refrescos',
-                          isSelected: _selectedCategory == 'Refrescos' || _selectedCategory == 'Todos',
-                          onTap: () => _filterByCategory('Refrescos'),
-                        ),
-                        _buildCategoryItem(
-                          icon: Icons.local_drink_outlined,
-                          label: 'Jugos',
-                          isSelected: _selectedCategory == 'Jugos',
-                          onTap: () => _filterByCategory('Jugos'),
-                        ),
-                        _buildCategoryItem(
-                          icon: Icons.water_drop,
-                          label: 'Agua',
-                          isSelected: _selectedCategory == 'Agua',
-                          onTap: () => _filterByCategory('Agua'),
-                        ),
-                      ],
+                    // Título "Nuestras Marcas"
+                    Text(
+                      'Nuestras Marcas',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'Lexend Deca',
+                      ),
                     ),
+                    
+                    // Spacer para equilibrar
+                    SizedBox(width: 80),
                   ],
                 ),
               ),
             ),
           ),
-          
+                    
+                
           // Contenido con productos
           Expanded(
-
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  // Promo Coca Cola - EXACTA COMO FIGMA
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Comparte\nuna Coca',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontFamily: 'Lexend Deca',
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Realiza tu pedido\nahora mismo',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                  fontFamily: 'Lexend Deca',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Imágenes de productos como en Figma
-                        Row(
-                          children: [
-                            Container(
-                              width: 50,
-                              height: 70,
-                              child: Image.asset(
-                                'assets/images/products/coca_bottle.png',
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFC31F39).withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Icon(
-                                      Icons.local_drink,
-                                      color: Color(0xFFC31F39),
-                                      size: 30,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 50,
-                              height: 70,
-                              child: Image.asset(
-                                'assets/images/products/coca_can.png',
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFFC31F39).withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Icon(
-                                      Icons.local_drink,
-                                      color: Color(0xFFC31F39),
-                                      size: 30,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  // AQUÍ es donde va el cambio
+                  _buildBusinessUnitsSection(),
+                  
+                  const SizedBox(height: 24),
+                  
+                  _buildCategoriesSection(),
                   
                   const SizedBox(height: 24),
                   
@@ -1011,12 +1095,16 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Productos',
+                      _selectedBusinessUnit != 'Todos' 
+                        ? 'Productos $_selectedBusinessUnit'
+                        : _selectedCategory != 'Todos'
+                          ? 'Productos $_selectedCategory'
+                          : 'Productos',
                       style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontFamily: 'Lexend Deca',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lexend Deca',
                       ),
                     ),
                   ),
@@ -1043,61 +1131,31 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
                                 ),
                               )
                             : GridView.builder(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 0.85,
-                                ),
-                                itemCount: _filteredProducts.length,
-                                itemBuilder: (context, index) {
-                                  final product = _filteredProducts[index];
-                                  return _buildProductCard(product);
-                                },
+                              itemCount: _filteredProducts.length,
+                              padding: const EdgeInsets.all(8),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2, // Siempre 2 columnas
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 0.75, // ← VALOR CORREGIDO
                               ),
-                  ),
-                ],
+                              itemBuilder: (context, index) {
+                                final product = _filteredProducts[index];
+                                return _buildProductCard(product); 
+                              },
+                            ),
+                      
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       
-      // Bottom navigation - EXACTO COMO FIGMA
-      bottomNavigationBar: Container(
-        height: 90,
-        decoration: const BoxDecoration(
-          color: Color(0xFFC31F39),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25),
-            topRight: Radius.circular(25),
-          ),
-        ),
-        child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(Icons.home, 'Inicio', true, () {}),
-              _buildNavItem(Icons.apps, 'Productos', false, () {}),
-              _buildNavItem(Icons.shopping_cart, 'Carrito', false, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CartScreen(
-                      phoneNumber: '+528120730053',
-                    ),
-                  ),
-                );
-              }),
-              _buildNavItem(Icons.shopping_bag, 'Pedidos', false, () {}),
-              _buildNavItem(Icons.menu, 'Menú', false, () {}),
-            ],
-          ),
-        ),
-      ),
     );
-  }
   
+}
   // Widget para categorías en círculos como Figma
   Widget _buildCategoryItem({
     required IconData icon,
@@ -1107,54 +1165,45 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xFFC31F39) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
-            child: Center(
-              child: Image.asset(
-                'assets/images/categories/${label.toLowerCase()}.png',
-                width: 40,
-                height: 40,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    icon,
-                    color: Color(0xFFC31F39),
-                    size: 32,
-                  );
-                },
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : Color(0xFFC31F39),
+              size: 20,
+            ),
+            SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Color(0xFFC31F39),
+                fontFamily: 'Lexend Deca',
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              fontFamily: 'Lexend Deca',
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
   
   // Widget para productos - EXACTO COMO FIGMA
+  // REEMPLAZAR el método _buildProductCard completo
   Widget _buildProductCard(Product product) {
     return Container(
       decoration: BoxDecoration(
@@ -1169,93 +1218,96 @@ class _TualiHomeScreenState extends State<TualiHomeScreen> {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(12), // Reducido de 16 a 12
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            // Círculo de fondo con imagen del producto
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: _getProductBackgroundColor(product.name),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Image.asset(
-                    _getProductImagePath(product),
-                    width: 50,
-                    height: 60,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.local_drink,
-                        color: _getProductColor(product.name),
-                        size: 35,
-                      );
-                    },
-                  ),
+            // Círculo de fondo con imagen del producto - TAMAÑO FIJO
+            Container(
+              width: 70, // Tamaño fijo
+              height: 70, // Tamaño fijo
+              decoration: BoxDecoration(
+                color: _getProductBackgroundColor(product.name),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Image.asset(
+                  _getProductImagePath(product),
+                  width: 45, // Reducido
+                  height: 50, // Reducido
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.local_drink,
+                      color: _getProductColor(product.name),
+                      size: 32, // Reducido
+                    );
+                  },
                 ),
               ),
             ),
             
-            const SizedBox(height: 12),
+            const SizedBox(height: 8), // Reducido de 12 a 8
             
-            // Información del producto
-            Flexible(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Nombre del producto
-                  Text(
+            // Información del producto - SIN EXPANDED/FLEXIBLE
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Nombre del producto - ALTURA FIJA
+                SizedBox(
+                  height: 32, // Altura fija para 2 líneas
+                  child: Text(
                     product.name,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12, // Reducido de 14 a 12
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                       fontFamily: 'Lexend Deca',
                     ),
                     textAlign: TextAlign.center,
-                    maxLines: 1,
+                    maxLines: 2, // Máximo 2 líneas
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
-                  // Precio
-                  Text(
-                    '\$ ${product.price.toStringAsFixed(1)}',
+                ),
+                
+                const SizedBox(height: 4),
+                
+                // Precio - ALTURA FIJA
+                SizedBox(
+                  height: 20, // Altura fija
+                  child: Text(
+                    '\$ ${product.price.toStringAsFixed(0)}', // Sin decimales
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14, // Reducido de 16 a 14
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                       fontFamily: 'Lexend Deca',
                     ),
                   ),
-                  
-                  // Botón agregar - círculo rojo con +
-                  Container(
-                    width: 32,
-                    height: 32,
-                    child: ElevatedButton(
-                      onPressed: () => _addToCart(product),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFC31F39),
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.zero,
-                        elevation: 2,
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                // Botón agregar - TAMAÑO FIJO
+                SizedBox(
+                  width: 28, // Tamaño fijo
+                  height: 28, // Tamaño fijo
+                  child: ElevatedButton(
+                    onPressed: () => _addToCart(product),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFC31F39),
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.zero,
+                      elevation: 2,
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 16, // Reducido de 18 a 16
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
