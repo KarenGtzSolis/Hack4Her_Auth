@@ -119,8 +119,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     flex: 5,
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF5F5F5),
+                        decoration: BoxDecoration(
+                        color: Colors.white,
                       ),
                       child: CustomPaint(
                         painter: GridPainter(),
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
@@ -742,7 +742,7 @@ class TualiHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           // Header with wave shape
@@ -1057,7 +1057,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey.shade300
+      ..color = Color(0xFFC31F39)
       ..strokeWidth = 1;
 
     const spacing = 40.0;
