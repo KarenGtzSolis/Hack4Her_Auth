@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Para emulador Android: http://10.0.2.2:5274/api/auth/send-otp
       // Para iOS/Web: http://localhost:5274/api/auth/send-otp
       final response = await http.post(
-        Uri.parse('http://localhost:5274/api/auth/send-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -376,7 +376,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       
       // Llamada real a la API de verificación
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5274/api/auth/send-otp'),
+        Uri.parse('http://10.0.2.2:5274/api/auth/verify-otp'),
         headers: {
           'Content-Type': 'application/json',
         },
